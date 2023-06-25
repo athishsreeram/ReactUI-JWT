@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [token, setToken] = useState('');
+  const [authCallValue, setAuthCallValue] = useState('');
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
@@ -18,12 +19,9 @@ function App() {
       const response = await fetch('https://welcome-yehr.onrender.com/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: JSON.stringify({
-          username: 'your_username',
-          password: 'your_password',
-        }),
+        body: 'username=your_username&password=password',
       });
 
       const { token } = await response.json();
@@ -49,8 +47,9 @@ function App() {
         },
       });
 
-      const data = await response.json();
-      console.log(data);
+      const data = await response.text();
+      const message = data || '';
+      setAuthCallValue(message);
     } catch (error) {
       console.error(error);
     }
@@ -62,9 +61,13 @@ function App() {
       {loggedIn ? (
         <div>
           <p>You are logged in.</p>
+          <p>The token value is: {token}</p>
           <button onClick={handleAuthorizedRequest}>
             Make Authorized Request
           </button>
+
+          <p>The Auth Call value is: {authCallValue}</p>
+
           <button onClick={handleLogout}>Logout</button>
         </div>
       ) : (
